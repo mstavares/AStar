@@ -56,7 +56,7 @@ def calcula_expancao(current):
             no([current.get_posicao()[0], current.get_posicao()[1] + 1]), \
             no([current.get_posicao()[0], current.get_posicao()[1] - 1])]
 
-def algoritmo(inicio, goal, espaco):
+def algoritmo(inicio, goal):
     q = [inicio]
     i = 0
 
@@ -74,4 +74,12 @@ def algoritmo(inicio, goal, espaco):
 
 
 inicializa_espaco(6)
-algoritmo(no([0, 0]), no([4, 5]), 2)
+file = open("obstaculos.txt", "r")
+obstaculos = file.read().splitlines()
+
+inicio = no([int(obstaculos[2][0]), int(obstaculos[2][-1])])
+goal = no([int(obstaculos[3][0]), int(obstaculos[3][-1])])
+
+algoritmo(inicio, goal)
+
+file = open("obstaculos.txt", "r")
