@@ -77,9 +77,7 @@ inicializa_espaco(6)
 file = open("obstaculos.txt", "r")
 obstaculos = file.read().splitlines()
 
-inicio = no([int(obstaculos[2][0]), int(obstaculos[2][-1])])
-goal = no([int(obstaculos[3][0]), int(obstaculos[3][-1])])
+inicio = no([int(obstaculos[2][1]), int(obstaculos[2][-2])])
+goal = no([int(obstaculos[3][1]), int(obstaculos[3][-2])])
 
 algoritmo(inicio, goal)
-
-file = open("obstaculos.txt", "r")
