@@ -77,6 +77,11 @@ inicializa_espaco(6)
 file = open("obstaculos.txt", "r")
 obstaculos = file.read().splitlines()
 
+
+
+
+dimensao = int(obstaculos[0])
+
 inicio = no([int(obstaculos[2][1]), int(obstaculos[2][-2])])
 goal = no([int(obstaculos[3][1]), int(obstaculos[3][-2])])
 
