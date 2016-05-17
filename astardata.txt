@@ -1,1 +1,0 @@
-fo = open("astardata.txt", "wb")
