@@ -34,21 +34,19 @@ def devolve_o_melhor_no(lista):
                 melhor = x
     return melhor
 
-def inicializa_espaco(dim):
+def inicializa_espaco(dim, obstaculos, inicio, goal):
     matriz = [ [ "0" for i in range(dim) ] for j in range(dim) ]
-    for i in matriz:
-        print " ".join(i)
-    print"\n"
-    return matriz
-
-def teste(matriz, obstaculos, inicio, goal):
+    # inicializar espaço numa só função
+    # desafio: inicializar espaço numa só linha de código
     for x in obstaculos:
         insere_objetos_na_matriz(matriz, x.get_posicao(), "1")
     insere_objetos_na_matriz(matriz, inicio.get_posicao(), "S")
     insere_objetos_na_matriz(matriz, goal.get_posicao(), "G")
+
     for i in matriz:
         print " ".join(i)
-
+    print"\n"
+    return matriz
 
 def calcula_heuristica(current, goal):
     return abs(goal.get_posicao()[0] - current.get_posicao()[0]) + abs(goal.get_posicao()[1] - current.get_posicao()[1])
@@ -85,23 +83,28 @@ def algoritmo(inicio, goal):
             q.extend(r)
             i += 1
 
+# modularizar esta função
 def ler_ficheiro():
     try:
         file = open("espaco.txt", "r")      
         espaco = file.read().splitlines()
+        # dimensao do espaço
         dimensao = int(espaco[0])
-        matriz = inicializa_espaco(dimensao)
 
+        # obstaculos (reduzir linhas de código para isto)
         obstaculos = []
-
         linha_obstaculos = espaco[1].replace(" ", "").split(";")
         for x in linha_obstaculos:
             obstaculos.append(no([int(x[1]), int(x[-2])]))
 
+        # initial state
         inicio = no([int(espaco[2][1]), int(espaco[2][-2])])
+        # goal state
         goal = no([int(espaco[3][1]), int(espaco[3][-2])])
 
-        teste(matriz, obstaculos, inicio, goal)
+        # inicializa espaço com dimensao, obstaculos, initial e goal state
+        inicializa_espaco(dimensao, obstaculos, inicio, goal)
+
         algoritmo(inicio, goal)
     except IOError:
         print "Erro, ficheiro não encontrado"
