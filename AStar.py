@@ -1,5 +1,4 @@
 class no:
-
     def __init__(self, posicao, custo = 0):
         self.posicao = posicao
         self.custo = custo
@@ -18,6 +17,11 @@ class no:
 def devolve_a_posicao(lista):
     return [i for i, x in enumerate(lista) if x == devolve_o_melhor_no(lista)][0]
 
+def insere_objetos_na_matriz(matriz, posicao, objeto):
+    linha = posicao[0]
+    coluna = posicao[1]
+    matriz[linha][coluna] = objeto
+
 def devolve_o_melhor_no(lista):
     melhor = None
     for x in lista:
@@ -32,7 +36,16 @@ def devolve_o_melhor_no(lista):
 
 def inicializa_espaco(dim):
     matriz = [ [ "0" for i in range(dim) ] for j in range(dim) ]
-    matriz[0][1] = "1"
+    for i in matriz:
+        print " ".join(i)
+    print"\n"
+    return matriz
+
+def teste(matriz, obstaculos, inicio, goal):
+    for x in obstaculos:
+        insere_objetos_na_matriz(matriz, x.get_posicao(), "1")
+    insere_objetos_na_matriz(matriz, inicio.get_posicao(), "S")
+    insere_objetos_na_matriz(matriz, goal.get_posicao(), "G")
     for i in matriz:
         print " ".join(i)
 
@@ -76,7 +89,7 @@ def algoritmo(inicio, goal):
 # temos de fazer um try catch finally para a leitura do ficheiro
 # o ficheiro tem de ser passado ao main por parametro
 
-inicializa_espaco(6)
+matriz = inicializa_espaco(6)
 file = open("espaco.txt", "r")
 espaco = file.read().splitlines()
 
@@ -88,9 +101,8 @@ linha_obstaculos = espaco[1].replace(" ", "").split(";")
 for x in linha_obstaculos:
     obstaculos.append(no([int(x[1]), int(x[-2])]))
 
-print obstaculos[0].get_posicao()
-
 inicio = no([int(espaco[2][1]), int(espaco[2][-2])])
 goal = no([int(espaco[3][1]), int(espaco[3][-2])])
 
+teste(matriz, obstaculos, inicio, goal)
 algoritmo(inicio, goal)
