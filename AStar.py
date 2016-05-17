@@ -89,9 +89,16 @@ def algoritmo(inicio, goal):
 # temos de fazer um try catch finally para a leitura do ficheiro
 # o ficheiro tem de ser passado ao main por parametro
 
+try:
+    file = open("espaco.txt", "r")
+    # passar ficheiro para o main
+except IOError:
+    print "Erro, ficheiro não encontrado"
+else:
+    print "Ficheiro lido com sucesso"
+
 
 matriz = inicializa_espaco(6)
-file = open("espaco.txt", "r")
 espaco = file.read().splitlines()
 
 
