@@ -85,32 +85,33 @@ def algoritmo(inicio, goal):
             q.extend(r)
             i += 1
 
+def ler_ficheiro():
+    try:
+        file = open("espaco.txt", "r")      
+        espaco = file.read().splitlines()
+        dimensao = int(espaco[0])
+        matriz = inicializa_espaco(dimensao)
 
-# temos de fazer um try catch finally para a leitura do ficheiro
-# o ficheiro tem de ser passado ao main por parametro
+        obstaculos = []
 
-try:
-    file = open("espaco.txt", "r")
-    # passar ficheiro para o main
-except IOError:
-    print "Erro, ficheiro não encontrado"
-else:
-    print "Ficheiro lido com sucesso"
+        linha_obstaculos = espaco[1].replace(" ", "").split(";")
+        for x in linha_obstaculos:
+            obstaculos.append(no([int(x[1]), int(x[-2])]))
 
+        inicio = no([int(espaco[2][1]), int(espaco[2][-2])])
+        goal = no([int(espaco[3][1]), int(espaco[3][-2])])
 
-matriz = inicializa_espaco(6)
-espaco = file.read().splitlines()
+        teste(matriz, obstaculos, inicio, goal)
+        algoritmo(inicio, goal)
+    except IOError:
+        print "Erro, ficheiro não encontrado"
+    else:
+        print "Ficheiro lido com sucesso"
 
+def main():
+    # cenas do main
+    ler_ficheiro()
 
-dimensao = int(espaco[0])
-obstaculos = []
+### START ###
 
-linha_obstaculos = espaco[1].replace(" ", "").split(";")
-for x in linha_obstaculos:
-    obstaculos.append(no([int(x[1]), int(x[-2])]))
-
-inicio = no([int(espaco[2][1]), int(espaco[2][-2])])
-goal = no([int(espaco[3][1]), int(espaco[3][-2])])
-
-teste(matriz, obstaculos, inicio, goal)
-algoritmo(inicio, goal)
+main()
