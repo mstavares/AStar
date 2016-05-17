@@ -73,16 +73,24 @@ def algoritmo(inicio, goal):
             i += 1
 
 
+# temos de fazer um try catch finally para a leitura do ficheiro
+# o ficheiro tem de ser passado ao main por parametro
+
 inicializa_espaco(6)
-file = open("obstaculos.txt", "r")
-obstaculos = file.read().splitlines()
+file = open("espaco.txt", "r")
+espaco = file.read().splitlines()
 
 
+dimensao = int(espaco[0])
+obstaculos = []
 
+linha_obstaculos = espaco[1].replace(" ", "").split(";")
+for x in linha_obstaculos:
+    obstaculos.append(no([int(x[1]), int(x[-2])]))
 
-dimensao = int(obstaculos[0])
+print obstaculos[0].get_posicao()
 
-inicio = no([int(obstaculos[2][1]), int(obstaculos[2][-2])])
-goal = no([int(obstaculos[3][1]), int(obstaculos[3][-2])])
+inicio = no([int(espaco[2][1]), int(espaco[2][-2])])
+goal = no([int(espaco[3][1]), int(espaco[3][-2])])
 
 algoritmo(inicio, goal)
