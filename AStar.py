@@ -89,6 +89,7 @@ def algoritmo(inicio, goal):
 # temos de fazer um try catch finally para a leitura do ficheiro
 # o ficheiro tem de ser passado ao main por parametro
 
+
 matriz = inicializa_espaco(6)
 file = open("espaco.txt", "r")
 espaco = file.read().splitlines()
