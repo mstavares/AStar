@@ -25,17 +25,14 @@ def devolve_o_melhor_no(lista):
     return lista.index(melhor)
 
 def inicializa_espaco(dim, obstaculos, inicio, goal):
-    matriz = [ [ "0" for i in range(dim) ] for j in range(dim) ]
+    matriz = [ [ "." for i in range(dim) ] for j in range(dim) ]
     # inicializar espaco numa so funcao
     # desafio: inicializar espaco numa so linha de codigo
     for obstaculo in obstaculos:
         insere_objetos_na_matriz(matriz, obstaculo, "1")
     insere_objetos_na_matriz(matriz, inicio.get_posicao(), "S")
     insere_objetos_na_matriz(matriz, goal.get_posicao(), "G")
-
-    for i in matriz:
-        print " ".join(i)
-    print"\n"
+    imprime_a_matriz(matriz)
     return matriz
 
 def calcula_heuristica(current, goal):
@@ -58,16 +55,30 @@ def calcula_expancao(current, obstaculos):
 
     return [x for x in expansao if x.get_posicao() not in obstaculos]
 
-def algoritmo(inicio, goal, obstaculos):
+def imprime_o_caminho(caminho, matriz):
+    caminho.pop(0), caminho.pop(-1)
+    for no in caminho:
+        insere_objetos_na_matriz(matriz, no.get_posicao(), "x")
+    imprime_a_matriz(matriz)
+
+def imprime_a_matriz(matriz):
+    for i in matriz:
+        print " ".join(i)
+    print"\n"
+
+def algoritmo(inicio, goal, obstaculos, matriz):
+    caminho = []
     q = [inicio]
     i = 0
 
     while len(q) > 0:
         h = q.pop(devolve_o_melhor_no(q))
+        caminho.append(h)
         print h.get_posicao()
         r = q
         if is_goal(h, goal):
             print "encontrei em %d iteracoes" % i
+            imprime_o_caminho(caminho, matriz)
             break
         else:
             q = calcula_expancao(h, obstaculos)
@@ -79,24 +90,27 @@ def algoritmo(inicio, goal, obstaculos):
 def ler_ficheiro(ficheiro):
     try:
         file = open(ficheiro, "r")
-        espaco = file.read().splitlines()
+        ficheiro = file.read().splitlines()
+
+        # tem de estar num finally
+        file.close()
 
         # dimensao do espaco
-        dimensao = int(espaco[0])
+        dimensao = int(ficheiro[0])
 
         # obstaculos (reduzir linhas de codigo para isto)
-        linha_obstaculos = espaco[1].replace(" ", "").split(";")
+        linha_obstaculos = ficheiro[1].replace(" ", "").split(";")
         obstaculos = [[int(x[1]), int(x[-2])] for x in linha_obstaculos]
 
         # initial state
-        inicio = No([int(espaco[2][1]), int(espaco[2][-2])])
+        inicio = No([int(ficheiro[2][1]), int(ficheiro[2][-2])])
         # goal state
-        goal = No([int(espaco[3][1]), int(espaco[3][-2])])
+        goal = No([int(ficheiro[3][1]), int(ficheiro[3][-2])])
 
         # inicializa espaco com dimensao, obstaculos, initial e goal state
-        inicializa_espaco(dimensao, obstaculos, inicio, goal)
+        matriz = inicializa_espaco(dimensao, obstaculos, inicio, goal)
 
-        algoritmo(inicio, goal, obstaculos)
+        algoritmo(inicio, goal, obstaculos, matriz)
     except IOError:
         print "Erro, ficheiro nao encontrado"
     else:
