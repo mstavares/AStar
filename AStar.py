@@ -36,8 +36,8 @@ def devolve_o_melhor_no(lista):
 
 def inicializa_espaco(dim, obstaculos, inicio, goal):
     matriz = [ [ "0" for i in range(dim) ] for j in range(dim) ]
-    # inicializar espaço numa só função
-    # desafio: inicializar espaço numa só linha de código
+    # inicializar espaoo numa so funcao
+    # desafio: inicializar espaoo numa so linha de codigo
     for x in obstaculos:
         insere_objetos_na_matriz(matriz, x.get_posicao(), "1")
     insere_objetos_na_matriz(matriz, inicio.get_posicao(), "S")
@@ -83,15 +83,15 @@ def algoritmo(inicio, goal):
             q.extend(r)
             i += 1
 
-# modularizar esta função
+# modularizar esta funcao
 def ler_ficheiro():
     try:
         file = open("espaco.txt", "r")      
         espaco = file.read().splitlines()
-        # dimensao do espaço
+        # dimensao do espaco
         dimensao = int(espaco[0])
 
-        # obstaculos (reduzir linhas de código para isto)
+        # obstaculos (reduzir linhas de codigo para isto)
         obstaculos = []
         linha_obstaculos = espaco[1].replace(" ", "").split(";")
         for x in linha_obstaculos:
@@ -102,12 +102,12 @@ def ler_ficheiro():
         # goal state
         goal = no([int(espaco[3][1]), int(espaco[3][-2])])
 
-        # inicializa espaço com dimensao, obstaculos, initial e goal state
+        # inicializa espaco com dimensao, obstaculos, initial e goal state
         inicializa_espaco(dimensao, obstaculos, inicio, goal)
 
         algoritmo(inicio, goal)
     except IOError:
-        print "Erro, ficheiro não encontrado"
+        print "Erro, ficheiro nao encontrado"
     else:
         print "Ficheiro lido com sucesso"
 
