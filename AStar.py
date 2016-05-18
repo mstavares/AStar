@@ -1,4 +1,6 @@
-class no:
+import sys
+
+class No:
     def __init__(self, posicao, custo = 0):
         self.posicao = posicao
         self.custo = custo
@@ -11,35 +13,23 @@ class no:
 
     def atualiza_custo(self, goal):
         self.custo += 1 + calcula_heuristica(self, goal)
-        print self.posicao
-        print self.custo
-
-def devolve_a_posicao(lista):
-    return [i for i, x in enumerate(lista) if x == devolve_o_melhor_no(lista)][0]
 
 def insere_objetos_na_matriz(matriz, posicao, objeto):
-    linha = posicao[0]
-    coluna = posicao[1]
-    matriz[linha][coluna] = objeto
+    matriz[posicao[0]][posicao[1]] = objeto
 
 def devolve_o_melhor_no(lista):
-    melhor = None
+    melhor = lista[0]
     for x in lista:
-        if(melhor is None):
+        if melhor.get_custo() > x.get_custo():
             melhor = x
-        else:
-            if(melhor.get_custo() < x.get_custo()):
-                continue
-            else:
-                melhor = x
-    return melhor
+    return lista.index(melhor)
 
 def inicializa_espaco(dim, obstaculos, inicio, goal):
     matriz = [ [ "0" for i in range(dim) ] for j in range(dim) ]
-    # inicializar espaoo numa so funcao
-    # desafio: inicializar espaoo numa so linha de codigo
-    for x in obstaculos:
-        insere_objetos_na_matriz(matriz, x.get_posicao(), "1")
+    # inicializar espaco numa so funcao
+    # desafio: inicializar espaco numa so linha de codigo
+    for obstaculo in obstaculos:
+        insere_objetos_na_matriz(matriz, obstaculo, "1")
     insere_objetos_na_matriz(matriz, inicio.get_posicao(), "S")
     insere_objetos_na_matriz(matriz, goal.get_posicao(), "G")
 
@@ -52,69 +42,73 @@ def calcula_heuristica(current, goal):
     return abs(goal.get_posicao()[0] - current.get_posicao()[0]) + abs(goal.get_posicao()[1] - current.get_posicao()[1])
 
 def is_goal(current, goal):
-    if(current.get_posicao() == goal.get_posicao()):
+    if current.get_posicao() == goal.get_posicao():
         return True
     else:
         return False
 
 def calcula_custo(q, goal):
-    for x in q:
-        x.atualiza_custo(goal)
+    [x.atualiza_custo(goal) for x in q]
 
-def calcula_expancao(current):
-    return  [no([current.get_posicao()[0] + 1, current.get_posicao()[1]]), \
-            no([current.get_posicao()[0] - 1, current.get_posicao()[1]]), \
-            no([current.get_posicao()[0], current.get_posicao()[1] + 1]), \
-            no([current.get_posicao()[0], current.get_posicao()[1] - 1])]
+def calcula_expancao(current, obstaculos):
+    expansao = [No([current.get_posicao()[0] + 1, current.get_posicao()[1]]),
+            No([current.get_posicao()[0] - 1, current.get_posicao()[1]]),
+            No([current.get_posicao()[0], current.get_posicao()[1] + 1]),
+            No([current.get_posicao()[0], current.get_posicao()[1] - 1])]
 
-def algoritmo(inicio, goal):
+    return [x for x in expansao if x.get_posicao() not in obstaculos]
+
+def algoritmo(inicio, goal, obstaculos):
     q = [inicio]
     i = 0
 
-    while(len(q) > 0):
-        h = q.pop(devolve_a_posicao(q))
+    while len(q) > 0:
+        h = q.pop(devolve_o_melhor_no(q))
+        print h.get_posicao()
         r = q
-        if(is_goal(h, goal)):
-            print "encontrei em %d iteracoes" %i
+        if is_goal(h, goal):
+            print "encontrei em %d iteracoes" % i
             break
         else:
-            q = calcula_expancao(h)
+            q = calcula_expancao(h, obstaculos)
             calcula_custo(q, goal)
             q.extend(r)
             i += 1
 
 # modularizar esta funcao
-def ler_ficheiro():
+def ler_ficheiro(ficheiro):
     try:
-        file = open("espaco.txt", "r")      
+        file = open(ficheiro, "r")
         espaco = file.read().splitlines()
+
         # dimensao do espaco
         dimensao = int(espaco[0])
 
         # obstaculos (reduzir linhas de codigo para isto)
-        obstaculos = []
         linha_obstaculos = espaco[1].replace(" ", "").split(";")
-        for x in linha_obstaculos:
-            obstaculos.append(no([int(x[1]), int(x[-2])]))
+        obstaculos = [[int(x[1]), int(x[-2])] for x in linha_obstaculos]
 
         # initial state
-        inicio = no([int(espaco[2][1]), int(espaco[2][-2])])
+        inicio = No([int(espaco[2][1]), int(espaco[2][-2])])
         # goal state
-        goal = no([int(espaco[3][1]), int(espaco[3][-2])])
+        goal = No([int(espaco[3][1]), int(espaco[3][-2])])
 
         # inicializa espaco com dimensao, obstaculos, initial e goal state
         inicializa_espaco(dimensao, obstaculos, inicio, goal)
 
-        algoritmo(inicio, goal)
+        algoritmo(inicio, goal, obstaculos)
     except IOError:
         print "Erro, ficheiro nao encontrado"
     else:
         print "Ficheiro lido com sucesso"
 
-def main():
+def main(argv):
     # cenas do main
-    ler_ficheiro()
+    if(len(argv) == 2):
+        ler_ficheiro(argv[1])
+    else:
+        print "O programa necessita de receber o ficheiro por argumento."
 
 ### START ###
 
-main()
+main(sys.argv)
