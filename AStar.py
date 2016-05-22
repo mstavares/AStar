@@ -92,20 +92,23 @@ def ler_ficheiro(ficheiro):
         file = open(ficheiro, "r")
         ficheiro = file.read().splitlines()
 
-        # tem de estar num finally
-        file.close()
-
         # dimensao do espaco
         dimensao = int(ficheiro[0])
 
-        # obstaculos (reduzir linhas de codigo para isto)
+        # obstaculos (em otimização)
         linha_obstaculos = ficheiro[1].replace(" ", "").split(";")
-        obstaculos = [[int(x[1]), int(x[-2])] for x in linha_obstaculos]
-
+        obstaculos = []
+        for obs in linha_obstaculos:
+            x, y = map(int, obs.strip('()').split(','))
+            obstaculos.append([x, y])
+        
         # initial state
-        inicio = No([int(ficheiro[2][1]), int(ficheiro[2][-2])])
+        x, y = map(int, ficheiro[2].strip('()').split(','))
+        inicio = No([x, y])
+
         # goal state
-        goal = No([int(ficheiro[3][1]), int(ficheiro[3][-2])])
+        x, y = map(int, ficheiro[3].strip('()').split(','))
+        goal = No([x, y])
 
         # inicializa espaco com dimensao, obstaculos, initial e goal state
         matriz = inicializa_espaco(dimensao, obstaculos, inicio, goal)
@@ -113,11 +116,12 @@ def ler_ficheiro(ficheiro):
         algoritmo(inicio, goal, obstaculos, matriz)
     except IOError:
         print "Erro, ficheiro nao encontrado"
-    else:
+    finally:
+        file.close()
         print "Ficheiro lido com sucesso"
 
 def main(argv):
-    # cenas do main
+    # teste ao argumento do programa
     if(len(argv) == 2):
         ler_ficheiro(argv[1])
     else:
