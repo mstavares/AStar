@@ -5,17 +5,16 @@ import sys
 # (optimization needed)
 def space_init(dimension, obstacles, initial, goal):
     matrix = []
-    """matrix = [ [ "." for i in range(dimension) ] for j in range(dimension) ]
-    for obs in obstacles:
-        matrix[obs[0], obs[1]] = "1"""
+    #matrix = [ [ "." for i in range(dimension) ] for j in range(dimension) ]
+    print obstacles
 
     # set space with obstacles
-    for i in range(dimension):
-        for j in range(dimension):
+    """for i in xrange(dimension):
+        for j in xrange(dimension):
             if [i, j] in obstacles:
                 matrix[i,j] = "1"
             else:
-                matrix[i,j] = "."
+                matrix[i,j] = "."""
 
     # set inital and goal states
     #matrix[initial[0], initial[1]] = "S"

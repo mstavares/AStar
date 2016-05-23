@@ -17,12 +17,7 @@ class No:
 def insere_objetos_na_matriz(matriz, posicao, objeto):
     matriz[posicao[0]][posicao[1]] = objeto
 
-def devolve_o_melhor_no(lista):
-    melhor = lista[0]
-    for x in lista:
-        if melhor.get_custo() > x.get_custo():
-            melhor = x
-    return lista.index(melhor)
+
 
 
 
@@ -57,12 +52,20 @@ def imprime_a_matriz(matriz):
         print " ".join(i)
     print"\n"
 
+def devolve_o_melhor_no(lista):
+    melhor = lista[0]
+    for x in lista:
+        if melhor.get_custo() > x.get_custo():
+            melhor = x
+
+    return lista.index(melhor)
+
 def a_star(inicio, goal, obstaculos, matriz):
     caminho = []
     q = [inicio]
     i = 0
 
-    while len(q) > 0:
+    while len(q):
         h = q.pop(devolve_o_melhor_no(q))
         caminho.append(h)
         print h.get_posicao()
@@ -77,7 +80,7 @@ def a_star(inicio, goal, obstaculos, matriz):
             q.extend(r)
             i += 1
 
-# inicializa espaço com os dados fornecidos pelo ficheiro
+# inicializa espaco com os dados fornecidos pelo ficheiro
 def inicializa_espaco(dim, obstaculos, inicio, goal):
     matriz = [ [ "." for i in range(dim) ] for j in range(dim) ]
 
@@ -86,6 +89,7 @@ def inicializa_espaco(dim, obstaculos, inicio, goal):
     insere_objetos_na_matriz(matriz, inicio.get_posicao(), "S")
     insere_objetos_na_matriz(matriz, goal.get_posicao(), "G")
     imprime_a_matriz(matriz)
+
     return matriz
 
 # modularizar esta funcao
