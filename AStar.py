@@ -33,13 +33,15 @@ def is_goal(current, goal):
 def calcula_custo(q, goal):
     [x.atualiza_custo(goal) for x in q]
 
-def calcula_expancao(current, obstaculos):
+def calcula_expancao(current, obstaculos, dim):
     expansao = [No([current.get_posicao()[0] + 1, current.get_posicao()[1]]),
             No([current.get_posicao()[0] - 1, current.get_posicao()[1]]),
             No([current.get_posicao()[0], current.get_posicao()[1] + 1]),
             No([current.get_posicao()[0], current.get_posicao()[1] - 1])]
 
-    return [x for x in expansao if x.get_posicao() not in obstaculos]
+    return [x for x in expansao if x.get_posicao() not in obstaculos
+            and (x.posicao[0] >= 0 and x.posicao[0] < dim) 
+            and (x.posicao[1] >= 0 and x.posicao[1] < dim) ]
 
 def imprime_o_caminho(caminho, matriz):
     caminho.pop(0), caminho.pop(-1)
@@ -60,7 +62,7 @@ def devolve_o_melhor_no(lista):
 
     return lista.index(melhor)
 
-def a_star(inicio, goal, obstaculos, matriz):
+def a_star(inicio, goal, obstaculos, matriz, dim):
     caminho = []
     q = [inicio]
     i = 0
@@ -75,7 +77,7 @@ def a_star(inicio, goal, obstaculos, matriz):
             imprime_o_caminho(caminho, matriz)
             break
         else:
-            q = calcula_expancao(h, obstaculos)
+            q = calcula_expancao(h, obstaculos, dim)
             calcula_custo(q, goal)
             q.extend(r)
             i += 1
@@ -119,7 +121,7 @@ def ler_ficheiro(ficheiro):
         # inicializa espaco com dimensao, obstaculos, initial e goal state
         matriz = inicializa_espaco(dimensao, obstaculos, inicio, goal)
 
-        a_star(inicio, goal, obstaculos, matriz)
+        a_star(inicio, goal, obstaculos, matriz, dimensao)
     except IOError:
         print "Erro, ficheiro nao encontrado"
     finally:
