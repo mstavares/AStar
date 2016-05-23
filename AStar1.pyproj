@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{cf24d4ad-560a-4045-95ce-a2866fecd431}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>AStar.py</StartupFile>
+    <StartupFile>AStarTest.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -29,6 +29,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AStar.py" />
+    <Compile Include="AStarTest.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\2.7" />

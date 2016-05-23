@@ -24,16 +24,7 @@ def devolve_o_melhor_no(lista):
             melhor = x
     return lista.index(melhor)
 
-def inicializa_espaco(dim, obstaculos, inicio, goal):
-    matriz = [ [ "." for i in range(dim) ] for j in range(dim) ]
-    # inicializar espaco numa so funcao
-    # desafio: inicializar espaco numa so linha de codigo
-    for obstaculo in obstaculos:
-        insere_objetos_na_matriz(matriz, obstaculo, "1")
-    insere_objetos_na_matriz(matriz, inicio.get_posicao(), "S")
-    insere_objetos_na_matriz(matriz, goal.get_posicao(), "G")
-    imprime_a_matriz(matriz)
-    return matriz
+
 
 def calcula_heuristica(current, goal):
     return abs(goal.get_posicao()[0] - current.get_posicao()[0]) + abs(goal.get_posicao()[1] - current.get_posicao()[1])
@@ -66,7 +57,7 @@ def imprime_a_matriz(matriz):
         print " ".join(i)
     print"\n"
 
-def algoritmo(inicio, goal, obstaculos, matriz):
+def a_star(inicio, goal, obstaculos, matriz):
     caminho = []
     q = [inicio]
     i = 0
@@ -86,6 +77,17 @@ def algoritmo(inicio, goal, obstaculos, matriz):
             q.extend(r)
             i += 1
 
+# inicializa espaço com os dados fornecidos pelo ficheiro
+def inicializa_espaco(dim, obstaculos, inicio, goal):
+    matriz = [ [ "." for i in range(dim) ] for j in range(dim) ]
+
+    for obstaculo in obstaculos:
+        insere_objetos_na_matriz(matriz, obstaculo, "1")
+    insere_objetos_na_matriz(matriz, inicio.get_posicao(), "S")
+    insere_objetos_na_matriz(matriz, goal.get_posicao(), "G")
+    imprime_a_matriz(matriz)
+    return matriz
+
 # modularizar esta funcao
 def ler_ficheiro(ficheiro):
     try:
@@ -101,7 +103,7 @@ def ler_ficheiro(ficheiro):
         for obs in linha_obstaculos:
             x, y = map(int, obs.strip('()').split(','))
             obstaculos.append([x, y])
-        
+
         # initial state
         x, y = map(int, ficheiro[2].strip('()').split(','))
         inicio = No([x, y])
@@ -113,7 +115,7 @@ def ler_ficheiro(ficheiro):
         # inicializa espaco com dimensao, obstaculos, initial e goal state
         matriz = inicializa_espaco(dimensao, obstaculos, inicio, goal)
 
-        algoritmo(inicio, goal, obstaculos, matriz)
+        a_star(inicio, goal, obstaculos, matriz)
     except IOError:
         print "Erro, ficheiro nao encontrado"
     finally:
