@@ -1,139 +1,162 @@
 import sys
 
-class No:
-    def __init__(self, posicao, custo = 0):
-        self.posicao = posicao
-        self.custo = custo
+# Implementation of Node class
+class Node:
+    def __init__(self, position, f_cost = 0, g_cost = 0):
+        self.position = position
+        self.f_cost = f_cost
+        self.parent = None
+        self.g_cost = g_cost
 
-    def get_posicao(self):
-        return self.posicao
+    def update_f_cost(self, goal):
+        self.f_cost += self.g_cost + calc_heuristic(self, goal)
 
-    def get_custo(self):
-        return self.custo
+# Formula for heuristic calculation for a grid
+def calc_heuristic(current, goal):
+    return abs(goal.position[0] - current.position[0]) + abs(goal.position[1] - current.position[1])
 
-    def atualiza_custo(self, goal):
-        self.custo += 1 + calcula_heuristica(self, goal)
+# Calculate F cost
+def calc_f_cost(q, goal):
+    [x.update_f_cost(goal) for x in q]
 
-def insere_objetos_na_matriz(matriz, posicao, objeto):
-    matriz[posicao[0]][posicao[1]] = objeto
-
-
-
-
-
-def calcula_heuristica(current, goal):
-    return abs(goal.get_posicao()[0] - current.get_posicao()[0]) + abs(goal.get_posicao()[1] - current.get_posicao()[1])
-
+# Goal check
 def is_goal(current, goal):
-    if current.get_posicao() == goal.get_posicao():
-        return True
-    else:
-        return False
+    if current.position == goal.position: return True
+    return False
 
-def calcula_custo(q, goal):
-    [x.atualiza_custo(goal) for x in q]
+# Check expansion Nodes and filter unreachable ones
+def calc_expansion(current, obstacles, dimension, closed_paths):
+    expansion = [Node([current.position[0] + 1, current.position[1]]),
+            Node([current.position[0] - 1, current.position[1]]),
+            Node([current.position[0], current.position[1] + 1]),
+            Node([current.position[0], current.position[1] - 1])]
 
-def calcula_expancao(current, obstaculos, dim):
-    expansao = [No([current.get_posicao()[0] + 1, current.get_posicao()[1]]),
-            No([current.get_posicao()[0] - 1, current.get_posicao()[1]]),
-            No([current.get_posicao()[0], current.get_posicao()[1] + 1]),
-            No([current.get_posicao()[0], current.get_posicao()[1] - 1])]
+    expansion = [x for x in expansion if x.position not in obstacles
+            and (x.position[0] >= 0 and x.position[0] < dimension) 
+            and (x.position[1] >= 0 and x.position[1] < dimension) ]
 
-    return [x for x in expansao if x.get_posicao() not in obstaculos
-            and (x.posicao[0] >= 0 and x.posicao[0] < dim) 
-            and (x.posicao[1] >= 0 and x.posicao[1] < dim) ]
+    for x in closed_paths:
+        for y in expansion:
+            if x.position == y.position:
+                expansion.remove(y)
 
-def imprime_o_caminho(caminho, matriz):
-    caminho.pop(0), caminho.pop(-1)
-    for no in caminho:
-        insere_objetos_na_matriz(matriz, no.get_posicao(), "x")
-    imprime_a_matriz(matriz)
+    return expansion
 
-def imprime_a_matriz(matriz):
-    for i in matriz:
+# Returns path with less F cost from Q list
+def return_best_path(path_list):
+    best = path_list[0]
+    for x in path_list:
+        if best.f_cost > x.f_cost:
+            best = x
+
+    return path_list.index(best)
+
+# Main function for A Star search
+def a_star(initial, goal, obstacles, matrix, dimension):
+    closed_paths = []
+    q = [initial]
+    i = 1
+
+    print "##### Starting A* algorithm pathfind #####\n "
+
+    while len(q):
+        print "### Iteration ", i
+        print "### Initial Q"
+        for node in q: print node.position
+
+        h = q.pop(return_best_path(q))
+        closed_paths.append(h)
+
+        print "### Head of the list (best path)\n", h.position
+        r = q
+        if is_goal(h, goal):
+            print " \nPath found in %d iterations" % i
+            print_path(h, matrix, initial)
+            break
+        else:
+            q = calc_expansion(h, obstacles, dimension, closed_paths)
+            for node in q: node.parent = h;
+            for node in q: node.g_cost += 1 + node.parent.g_cost
+            print "### Expansion of H"
+            for node in q: print node.position
+            calc_f_cost(q, goal)
+            q.extend(r)
+            print "### List Q = E + R with preview nodes"
+            for node in q: print node.parent.position, " -> ", node.position, " custo ", node.f_cost
+            i += 1
+            print "--------------------\n "
+
+# Print final path on screen
+# Iterating over parent nodes
+def print_path(h, matrix, initial):
+    node = h;
+    while node.parent is not initial:
+        node = node.parent
+        insert_objects_in_matrix(matrix, node.position, "x")
+    print_matrix(matrix)
+    
+# Print matrix                
+def print_matrix(matrix):
+    for i in matrix:
         print " ".join(i)
     print"\n"
 
-def devolve_o_melhor_no(lista):
-    melhor = lista[0]
-    for x in lista:
-        if melhor.get_custo() > x.get_custo():
-            melhor = x
+def insert_objects_in_matrix(matrix, position, object):
+    matrix[position[0]][position[1]] = object
 
-    return lista.index(melhor)
+# Initializing space with data from file
+def initialize_space(dimension, obstacles, initial, goal):
+    matrix = [ [ "." for i in range(dimension) ] for j in range(dimension) ]
 
-def a_star(inicio, goal, obstaculos, matriz, dim):
-    caminho = []
-    q = [inicio]
-    i = 0
+    for obstacle in obstacles:
+        insert_objects_in_matrix(matrix, obstacle, "1")
+    insert_objects_in_matrix(matrix, initial.position, "S")
+    insert_objects_in_matrix(matrix, goal.position, "G")
+    print_matrix(matrix)
 
-    while len(q):
-        h = q.pop(devolve_o_melhor_no(q))
-        caminho.append(h)
-        print h.get_posicao()
-        r = q
-        if is_goal(h, goal):
-            print "encontrei em %d iteracoes" % i
-            imprime_o_caminho(caminho, matriz)
-            break
-        else:
-            q = calcula_expancao(h, obstaculos, dim)
-            calcula_custo(q, goal)
-            q.extend(r)
-            i += 1
+    return matrix
 
-# inicializa espaco com os dados fornecidos pelo ficheiro
-def inicializa_espaco(dim, obstaculos, inicio, goal):
-    matriz = [ [ "." for i in range(dim) ] for j in range(dim) ]
-
-    for obstaculo in obstaculos:
-        insere_objetos_na_matriz(matriz, obstaculo, "1")
-    insere_objetos_na_matriz(matriz, inicio.get_posicao(), "S")
-    insere_objetos_na_matriz(matriz, goal.get_posicao(), "G")
-    imprime_a_matriz(matriz)
-
-    return matriz
-
-# modularizar esta funcao
-def ler_ficheiro(ficheiro):
+# Read file function
+# Reading line by line, striping and spliting to get coordinates
+def read_file(file_input):
     try:
-        file = open(ficheiro, "r")
-        ficheiro = file.read().splitlines()
+        file = open(file_input, "r")
+        file_input = file.read().splitlines()
 
-        # dimensao do espaco
-        dimensao = int(ficheiro[0])
+        # Space dimension
+        dimension = int(file_input[0])
 
-        # obstaculos (em otimização)
-        linha_obstaculos = ficheiro[1].replace(" ", "").split(";")
-        obstaculos = []
-        for obs in linha_obstaculos:
-            x, y = map(int, obs.strip('()').split(','))
-            obstaculos.append([x, y])
+        # obstacles
+        obstacles_line = file_input[1].replace(" ", "").split(";")
+        obstacles = []
+        for obstacle in obstacles_line:
+            x, y = map(int, obstacle.strip('()').split(','))
+            obstacles.append([x, y])
 
         # initial state
-        x, y = map(int, ficheiro[2].strip('()').split(','))
-        inicio = No([x, y])
+        x, y = map(int, file_input[2].strip('()').split(','))
+        initial = Node([x, y])
 
         # goal state
-        x, y = map(int, ficheiro[3].strip('()').split(','))
-        goal = No([x, y])
+        x, y = map(int, file_input[3].strip('()').split(','))
+        goal = Node([x, y])
 
-        # inicializa espaco com dimensao, obstaculos, initial e goal state
-        matriz = inicializa_espaco(dimensao, obstaculos, inicio, goal)
+        # initialize space with dimension, obstacles, initial and goal state
+        matrix = initialize_space(dimension, obstacles, initial, goal)
 
-        a_star(inicio, goal, obstaculos, matriz, dimensao)
+        a_star(initial, goal, obstacles, matrix, dimension)
     except IOError:
-        print "Erro, ficheiro nao encontrado"
+        print "Error, file not found"
     finally:
         file.close()
-        print "Ficheiro lido com sucesso"
+        print "File read with success"
 
 def main(argv):
-    # teste ao argumento do programa
+    # main program arg test
     if(len(argv) == 2):
-        ler_ficheiro(argv[1])
+        read_file(argv[1])
     else:
-        print "O programa necessita de receber o ficheiro por argumento."
+        print "The program needs the file as argument."
 
 ### START ###
 
