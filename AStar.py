@@ -1,5 +1,6 @@
 import sys
 
+
 # Implementation of Node class
 class Node:
     def __init__(self, position, f_cost = 0, g_cost = 0):
@@ -11,18 +12,22 @@ class Node:
     def update_f_cost(self, goal):
         self.f_cost += self.g_cost + calc_heuristic(self, goal)
 
+
 # Formula for heuristic calculation for a grid
 def calc_heuristic(current, goal):
     return abs(goal.position[0] - current.position[0]) + abs(goal.position[1] - current.position[1])
+
 
 # Calculate F cost
 def calc_f_cost(q, goal):
     [x.update_f_cost(goal) for x in q]
 
+
 # Goal check
 def is_goal(current, goal):
     if current.position == goal.position: return True
     return False
+
 
 # Check expansion Nodes and filter unreachable ones
 def calc_expansion(current, obstacles, dimension, closed_paths):
@@ -32,8 +37,8 @@ def calc_expansion(current, obstacles, dimension, closed_paths):
             Node([current.position[0], current.position[1] - 1])]
 
     expansion = [x for x in expansion if x.position not in obstacles
-            and (x.position[0] >= 0 and x.position[0] < dimension) 
-            and (x.position[1] >= 0 and x.position[1] < dimension) ]
+            and (0 <= x.position[0] < dimension)
+            and (0 <= x.position[1] < dimension)]
 
     for x in closed_paths:
         for y in expansion:
@@ -41,6 +46,7 @@ def calc_expansion(current, obstacles, dimension, closed_paths):
                 expansion.remove(y)
 
     return expansion
+
 
 # Returns path with less F cost from Q list
 def return_best_path(path_list):
@@ -50,6 +56,7 @@ def return_best_path(path_list):
             best = x
 
     return path_list.index(best)
+
 
 # Main function for A Star search
 def a_star(initial, goal, obstacles, matrix, dimension):
@@ -86,15 +93,17 @@ def a_star(initial, goal, obstacles, matrix, dimension):
             i += 1
             print "--------------------\n "
 
+
 # Print final path on screen
 # Iterating over parent nodes
 def print_path(h, matrix, initial):
-    node = h;
+    node = h
     while node.parent is not initial:
         node = node.parent
         insert_objects_in_matrix(matrix, node.position, "x")
     print_matrix(matrix)
-    
+
+
 # Print matrix                
 def print_matrix(matrix):
     file = open("path.txt", "w")
@@ -103,8 +112,10 @@ def print_matrix(matrix):
         file.write(" ".join(i) + "\n")
     print"\n"
 
+
 def insert_objects_in_matrix(matrix, position, object):
     matrix[position[0]][position[1]] = object
+
 
 # Initializing space with data from file
 def initialize_space(dimension, obstacles, initial, goal):
@@ -117,6 +128,7 @@ def initialize_space(dimension, obstacles, initial, goal):
     print_matrix(matrix)
 
     return matrix
+
 
 # Read file function
 # Reading line by line, striping and spliting to get coordinates
@@ -153,13 +165,13 @@ def read_file(file_input):
         file.close()
         print "File read with success"
 
+
 def main(argv):
     # main program arg test
-    if(len(argv) == 2):
+    if len(argv) == 2:
         read_file(argv[1])
     else:
         print "The program needs the file as argument."
 
 ### START ###
-
 main(sys.argv)
