@@ -97,8 +97,10 @@ def print_path(h, matrix, initial):
     
 # Print matrix                
 def print_matrix(matrix):
+    file = open("path.txt", "w")
     for i in matrix:
         print " ".join(i)
+        file.write(" ".join(i) + "\n")
     print"\n"
 
 def insert_objects_in_matrix(matrix, position, object):
