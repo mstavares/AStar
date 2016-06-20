@@ -155,10 +155,7 @@ def read_file(file_input):
         x, y = map(int, file_input[3].strip('()').split(','))
         goal = Node([x, y])
 
-        # initialize space with dimension, obstacles, initial and goal state
-        matrix = initialize_space(dimension, obstacles, initial, goal)
-
-        a_star(initial, goal, obstacles, matrix, dimension)
+        return initial, goal, obstacles, dimension
     except IOError:
         print "Error, file not found"
     finally:
@@ -169,7 +166,11 @@ def read_file(file_input):
 def main(argv):
     # main program arg test
     if len(argv) == 2:
-        read_file(argv[1])
+        initial, goal, obstacles, dimension = read_file(argv[1])
+        # initialize space with dimension, obstacles, initial and goal state
+        matrix = initialize_space(dimension, obstacles, initial, goal)
+        # run A* algorithm
+        a_star(initial, goal, obstacles, matrix, dimension)
     else:
         print "The program needs the file as argument."
 
