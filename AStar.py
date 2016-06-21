@@ -1,5 +1,5 @@
 import sys
-
+import operator
 
 # Implementation of Node class
 class Node:
@@ -57,6 +57,30 @@ def return_best_path(path_list):
 
     return path_list.index(best)
 
+def check_length (q):
+    if len(q) > 3:
+        return xrange(3)
+    else:
+        return xrange(len(q))
+
+def print_best_three_paths (q, initial):
+    for x in check_length(q):
+        print "Best path ", x + 1
+        node = q[x]
+        # for node in q:
+        caminho = []
+        while node.parent is not initial:
+            node = node.parent
+            caminho.append(node)
+        if len(caminho) > 0:
+            caminho.reverse()
+            caminho2 = []
+            for x in xrange(len(caminho)):
+                caminho2.append(caminho[x].position)
+            print caminho2
+            print "Cost: ", caminho[-1].f_cost
+            print "--------------------"
+
 
 # Main function for A Star search
 def a_star(initial, goal, obstacles, matrix, dimension):
@@ -67,9 +91,10 @@ def a_star(initial, goal, obstacles, matrix, dimension):
     print "##### Starting A* algorithm pathfind #####\n "
 
     while len(q):
+        print "\n####################"
         print "### Iteration ", i
         print "### Initial Q"
-        for node in q: print node.position
+        #for node in q: print node.position
 
         h = q.pop(return_best_path(q))
         closed_paths.append(h)
@@ -78,20 +103,22 @@ def a_star(initial, goal, obstacles, matrix, dimension):
         r = q
         if is_goal(h, goal):
             print " \nPath found in %d iterations" % i
+            print_best_three_paths(q, initial)
             print_path(h, matrix, initial)
             break
         else:
             q = calc_expansion(h, obstacles, dimension, closed_paths)
             for node in q: node.parent = h;
             for node in q: node.g_cost += 1 + node.parent.g_cost
-            print "### Expansion of H"
-            for node in q: print node.position
+            #print "### Expansion of H"
+            #for node in q: print node.position
             calc_f_cost(q, goal)
             q.extend(r)
-            print "### List Q = E + R with preview nodes"
-            for node in q: print node.parent.position, " -> ", node.position, " custo ", node.f_cost
+            q.sort(key=operator.attrgetter("f_cost"))
+            print "### Best three paths\n"
+
+            print_best_three_paths(q, initial)
             i += 1
-            print "--------------------\n "
 
 
 # Print final path on screen
