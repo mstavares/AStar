@@ -1,6 +1,7 @@
 import sys
 import operator
 
+
 # Implementation of Node class
 class Node:
     def __init__(self, position, f_cost = 0, g_cost = 0):
