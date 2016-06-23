@@ -25,8 +25,7 @@ def calc_f_cost(q, goal):
 
 # Goal check
 def is_goal(current, goal):
-    if current.position == goal.position: return True
-    return False
+    return True if current.position == goal.position else False
 
 
 # Check expansion Nodes and filter unreachable ones
@@ -57,30 +56,27 @@ def return_best_path(path_list):
 
     return path_list.index(best)
 
-def check_length (q):
-    if len(q) > 3:
-        return xrange(3)
-    else:
-        return xrange(len(q))
 
-def print_best_three_paths (q, initial):
-    for x in check_length(q):
+# Loop to print best three paths
+def print_best_three_paths(q, initial):
+    print "\n### Best three paths:"
+    #for x in check_length(q):
+    for x in xrange(3) if len(q) > 3 else xrange(len(q)):
         print "Best path ", x + 1
-        node = q[x]
-        # for node in q:
-        caminho = []
-        while node.parent is not initial:
-            node = node.parent
-            caminho.append(node)
-        if len(caminho) > 0:
-            caminho.reverse()
-            caminho2 = []
-            for x in xrange(len(caminho)):
-                caminho2.append(caminho[x].position)
-            print caminho2
-            print "Cost: ", caminho[-1].f_cost
-            print "--------------------"
+        print_path(q[x], initial)
 
+
+# Print all nodes sequencialy as a path
+def print_path(node, initial):
+    path = []
+    iterator_node = node
+    while iterator_node.parent is not initial:
+        iterator_node = iterator_node.parent
+        path.append(iterator_node.position)
+    path.reverse()
+    print(' '.join([str(i) for i in path]))
+    print "Cost: ", node.f_cost
+    print "--------------------"
 
 # Main function for A Star search
 def a_star(initial, goal, obstacles, matrix, dimension):
@@ -94,7 +90,6 @@ def a_star(initial, goal, obstacles, matrix, dimension):
         print "\n####################"
         print "### Iteration ", i
         print "### Initial Q"
-        #for node in q: print node.position
 
         h = q.pop(return_best_path(q))
         closed_paths.append(h)
@@ -102,28 +97,24 @@ def a_star(initial, goal, obstacles, matrix, dimension):
         print "### Head of the list (best path)\n", h.position
         r = q
         if is_goal(h, goal):
-            print " \nPath found in %d iterations" % i
-            print_best_three_paths(q, initial)
-            print_path(h, matrix, initial)
+            print " \nBest path found in %d iterations" % i
+            print_path(h, initial)
+            print_path_on_matrix(h, matrix, initial)
             break
         else:
             q = calc_expansion(h, obstacles, dimension, closed_paths)
             for node in q: node.parent = h;
             for node in q: node.g_cost += 1 + node.parent.g_cost
-            #print "### Expansion of H"
-            #for node in q: print node.position
             calc_f_cost(q, goal)
             q.extend(r)
             q.sort(key=operator.attrgetter("f_cost"))
-            print "### Best three paths\n"
-
             print_best_three_paths(q, initial)
             i += 1
 
 
 # Print final path on screen
 # Iterating over parent nodes
-def print_path(h, matrix, initial):
+def print_path_on_matrix(h, matrix, initial):
     node = h
     while node.parent is not initial:
         node = node.parent
@@ -147,7 +138,6 @@ def insert_objects_in_matrix(matrix, position, object):
 # Initializing space with data from file
 def initialize_space(dimension, obstacles, initial, goal):
     matrix = [ [ "." for i in range(dimension) ] for j in range(dimension) ]
-
     for obstacle in obstacles:
         insert_objects_in_matrix(matrix, obstacle, "1")
     insert_objects_in_matrix(matrix, initial.position, "S")
